@@ -9,6 +9,7 @@
         <!-- 图像判断阈值，当摄像头前方有人移动时会计算变化值，当值大于次阈值时播放语音 -->
         <param name="threshold" value="1000000" />
         <!-- 欢迎光临的提示语句 -->
-        <param name="greeting_words" value="欢迎光临测试" />
+        <param name="greeting_words" value="欢迎光临" />
+        <param name="is_enabled" value="false" />
     </node>
 </launch>

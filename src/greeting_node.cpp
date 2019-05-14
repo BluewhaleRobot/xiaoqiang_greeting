@@ -30,14 +30,14 @@
 sensor_msgs::ImageConstPtr last_frame = NULL;
 float linear_x = 0;
 float angle_z = 0;
-std::mutex update_frame_mutex;
-cv::Mat previousFrame;
+cv::Mat previous_frame;
 ros::Publisher image_pub;
 ros::Publisher res_pub;
 ros::Publisher audio_pub;
 int threshold = 1000000;
 int64_t audio_count = 0;
 std::string greeting_words;
+bool is_enabled = true;
 
 
 
@@ -53,14 +53,14 @@ bool check_greeting(cv::Mat image){
         audio_count = 0;
     cv::Mat gray_image;
     cv::cvtColor(image, gray_image, CV_BGR2GRAY);    
-    if(previousFrame.empty() || std::abs(linear_x) > 0.05 || std::abs(angle_z) > 0.1){
-        previousFrame = gray_image;
+    if(previous_frame.empty() || std::abs(linear_x) > 0.05 || std::abs(angle_z) > 0.1){
+        previous_frame = gray_image;
         return false;
     }
     cv::Mat diffFrame;
-    cv::absdiff(gray_image, previousFrame, diffFrame);
+    cv::absdiff(gray_image, previous_frame, diffFrame);
     cv::Mat resFrame;
-    previousFrame = gray_image;
+    previous_frame = gray_image;
     cv::cvtColor(diffFrame, image, CV_GRAY2BGR);
     std_msgs::Int64 result;
     result.data = cv::sum(diffFrame)[0];
@@ -72,6 +72,8 @@ bool check_greeting(cv::Mat image){
 
 void update_frame(const sensor_msgs::ImageConstPtr &new_frame)
 {
+    if(!is_enabled)
+        return;
     last_frame = new_frame;
     cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(new_frame, "bgr8");
     cv::Mat cv_image = cv_ptr->image;
@@ -106,6 +108,7 @@ int main(int argc, char **argv)
     ros::param::param<std::string>("~greeting_words", greeting_words, "欢迎光临");
     while (ros::ok())
     {
+        private_nh.param("is_enabled", is_enabled, true);
         sleep(1);
     }
 }
