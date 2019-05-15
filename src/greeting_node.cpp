@@ -38,6 +38,7 @@ int threshold = 1000000;
 int64_t audio_count = 0;
 std::string greeting_words;
 bool is_enabled = true;
+bool enable_debug = false;
 
 
 
@@ -52,19 +53,21 @@ bool check_greeting(cv::Mat image){
     if(audio_count <= 0)
         audio_count = 0;
     cv::Mat gray_image;
-    cv::cvtColor(image, gray_image, CV_BGR2GRAY);    
+    cv::cvtColor(image, gray_image, CV_BGR2GRAY);
+    cv::Mat smooth_image;
+    medianBlur(gray_image, smooth_image, 3);
     if(previous_frame.empty() || std::abs(linear_x) > 0.05 || std::abs(angle_z) > 0.1){
-        previous_frame = gray_image;
+        previous_frame = smooth_image;
         return false;
     }
     cv::Mat diffFrame;
-    cv::absdiff(gray_image, previous_frame, diffFrame);
-    cv::Mat resFrame;
-    previous_frame = gray_image;
+    cv::absdiff(smooth_image, previous_frame, diffFrame);
+    previous_frame = smooth_image;
     cv::cvtColor(diffFrame, image, CV_GRAY2BGR);
     std_msgs::Int64 result;
     result.data = cv::sum(diffFrame)[0];
-    res_pub.publish(result);
+    if(enable_debug)
+        res_pub.publish(result);
     if(result.data > threshold)
         return true;
     return false;
@@ -85,12 +88,13 @@ void update_frame(const sensor_msgs::ImageConstPtr &new_frame)
             audio_count = 2 * 1000;
         }
     }
-    image_pub.publish(cv_ptr->toImageMsg());
+    if(enable_debug)
+        image_pub.publish(cv_ptr->toImageMsg());
 }
 
-void update_twist(const geometry_msgs::TwistConstPtr &twist){
-    linear_x = twist->linear.x;
-    angle_z = twist->angular.z;
+void update_odom(const nav_msgs::OdometryConstPtr &odom){
+    linear_x = odom->twist.twist.linear.x;
+    angle_z = odom->twist.twist.angular.z;
 }
 
 int main(int argc, char **argv)
@@ -103,8 +107,9 @@ int main(int argc, char **argv)
     res_pub = private_nh.advertise<std_msgs::Int64>("results", 10);
     audio_pub = private_nh.advertise<std_msgs::String>("text", 10);
     ros::Subscriber image_sub = private_nh.subscribe("image", 10, update_frame);
-    ros::Subscriber twist_sub = private_nh.subscribe("cmd_vel", 10, update_twist);
+    ros::Subscriber twist_sub = private_nh.subscribe("odom", 10, update_odom);
     private_nh.param("threshold", threshold, 1000000);
+    private_nh.param("enable_debug", enable_debug, false);
     ros::param::param<std::string>("~greeting_words", greeting_words, "欢迎光临");
     while (ros::ok())
     {

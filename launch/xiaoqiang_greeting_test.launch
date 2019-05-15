@@ -1,16 +1,17 @@
 <launch>
     <node name="xiaoqiang_greeting_node" pkg="xiaoqiang_greeting" type="greeting_node" output="screen">
         <!-- 图像输入话题 -->
-        <remap from="~image" to="/camera_node/image_raw" />
+        <remap from="~image" to="/multi/front/image_raw" />
         <!-- 语音文字输出话题 -->
         <remap from="~text" to="/xiaoqiang_tts/text" />
         <!-- 机器人速度话题。如果机器人在移动中则禁用欢迎功能 -->
-        <remap from="~cmd_vel" to="/cmd_vel" />
+        <remap from="~odom" to="/xqserial_server/Odom" />
         <!-- 图像判断阈值，当摄像头前方有人移动时会计算变化值，当值大于次阈值时播放语音 -->
         <param name="threshold" value="1000000" />
         <!-- 欢迎光临的提示语句 -->
-        <param name="greeting_words" value="欢迎光临测试" />
+        <param name="greeting_words" value="欢迎光临" />
+        <param name="enable_debug" value="true" />
     </node>
     <include file="$(find xiaoqiang_tts)/launch/tts_xunfei.launch" />
-    <include file="$(find usb_cam)/launch/ov2610.launch" />
+    <include file="$(find usb_cam)/launch/multi.launch" />
 </launch>
