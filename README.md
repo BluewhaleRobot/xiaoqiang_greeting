@@ -26,13 +26,15 @@ roslaunch xiaoqiang_greeting xiaoqiang_greeting_test.launch
 |话题|类型|说明|
 |--|--|--|
 |image|sensor_msgs/Image|摄像头图像输入话题|
-|cmd_vel|geometry_msgs/Twist|机器人速度指令|
+|odom|nav_msgs/Odometry|机器人速度状态，运动状态下不进行检测|
 
 ### 输出话题
 
 |话题|类型|说明|
 |--|--|--|
 |text|std_msgs/String|输出的欢迎语句|
+|result|std_msgs/Int64|图像变化计算结果|
+|processed_image|sensor_msgs/Image|处理后的图像输出|
 
 ### 参数说明
 
