@@ -10,7 +10,7 @@
         <param name="threshold" value="1000000" />
         <!-- 欢迎光临的提示语句 -->
         <param name="greeting_words" value="欢迎光临" />
-        <param name="is_enabled" value="false" />
+        <param name="is_enabled" value="true" />
         <param name="enable_debug" value="false" />
     </node>
 </launch>

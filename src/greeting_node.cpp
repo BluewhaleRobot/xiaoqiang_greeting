@@ -55,7 +55,7 @@ bool check_greeting(cv::Mat image){
     cv::Mat gray_image;
     cv::cvtColor(image, gray_image, CV_BGR2GRAY);
     cv::Mat smooth_image;
-    medianBlur(gray_image, smooth_image, 3);
+    GaussianBlur(gray_image, smooth_image, cv::Size(9, 9), 0);
     if(previous_frame.empty() || std::abs(linear_x) > 0.05 || std::abs(angle_z) > 0.1){
         previous_frame = smooth_image;
         return false;
