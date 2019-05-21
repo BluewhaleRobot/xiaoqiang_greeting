@@ -11,8 +11,8 @@
         <!-- 欢迎光临的提示语句 -->
         <param name="greeting_words" value="欢迎光临" />
         <!-- 是否启动欢迎功能，当为false是为禁用状态 -->
-        <param name="is_enabled" value="true" />
+        <param name="is_enabled" value="false" />
         <!-- 是否启动debug，当true时会发布处理结果话题 -->
-        <param name="enable_debug" value="true" />
+        <param name="enable_debug" value="fasle" />
     </node>
 </launch>
